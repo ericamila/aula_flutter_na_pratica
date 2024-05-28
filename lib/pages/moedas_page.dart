@@ -1,55 +1,84 @@
-import 'package:aula_1/repositories/favoritas_repository.dart';
+// ignore_for_file: depend_on_referenced_packages
+
+import '../configs/app_settings.dart';
+import '../models/moeda.dart';
+import 'moedas_detalhes_page.dart';
+import '../repositories/favoritas_repository.dart';
+import '../repositories/moeda_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:aula_1/repositories/moeda_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../models/moeda.dart';
-import 'moedas_detalhes_page.dart';
-
 class MoedasPage extends StatefulWidget {
   const MoedasPage({super.key});
+
   @override
   State<MoedasPage> createState() => _MoedasPageState();
 }
 
 class _MoedasPageState extends State<MoedasPage> {
   final tabela = MoedaRepository.tabela;
-  NumberFormat real = NumberFormat.currency(locale: 'pt_BR', name: 'R\$');
+  late NumberFormat real;
+  late Map<String, String> loc;
   List<Moeda> selecionadas = [];
   late FavoritasRepository favoritas;
+
+  readNumberFormat() {
+    loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
+  changeLanguageButton() {
+    final locale = loc['locale'] == 'pt_BR' ? 'en_US' : 'pt_BR';
+    final name = loc['locale'] == 'pt_BR' ? '\$' : 'R\$';
+
+    return PopupMenuButton(
+      icon: const Icon(Icons.language),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            child: ListTile(
+          leading: const Icon(Icons.swap_vert),
+          title: Text('Usar $locale'),
+          onTap: () {
+            context.read<AppSettings>().setLocale(locale, name);
+            Navigator.pop(context);
+          },
+        )),
+      ],
+    );
+  }
 
   appBarDinamica() {
     if (selecionadas.isEmpty) {
       return AppBar(
-        title: const Text('Cripto Moedas')
+        title: const Text('Cripto Moedas'),
+        actions: [
+          changeLanguageButton(),
+        ],
       );
     } else {
       return AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            setState(() {
-              selecionadas = [];
-            });
+            limparSelecionadas();
           },
         ),
         title: Text('${selecionadas.length} selecionadas'),
         backgroundColor: Colors.blueGrey[50],
         elevation: 1,
-        foregroundColor: Colors.black87,
+        iconTheme: const IconThemeData(color: Colors.black87),
         titleTextStyle: const TextStyle(
           color: Colors.black87,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        centerTitle: true,
       );
     }
   }
 
   mostrarDetalhes(Moeda moeda) {
-     Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => MoedasDetalhesPage(moeda: moeda),
@@ -57,7 +86,7 @@ class _MoedasPageState extends State<MoedasPage> {
     );
   }
 
-  limparSelecionadas(){
+  limparSelecionadas() {
     setState(() {
       selecionadas = [];
     });
@@ -65,7 +94,9 @@ class _MoedasPageState extends State<MoedasPage> {
 
   @override
   Widget build(BuildContext context) {
-    favoritas = Provider.of<FavoritasRepository>(context);
+    // favoritas = Provider.of<FavoritasRepository>(context);
+    favoritas = context.watch<FavoritasRepository>();
+    readNumberFormat();
 
     return Scaffold(
       appBar: appBarDinamica(),
@@ -92,9 +123,8 @@ class _MoedasPageState extends State<MoedasPage> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                if(favoritas.lista.contains(tabela[moeda]))
-                  const Icon(Icons.circle, color: Colors.amber, size: 8,),
-
+                if (favoritas.lista.any((fav) => fav.sigla == tabela[moeda].sigla))
+                  const Icon(Icons.circle, color: Colors.amber, size: 8),
               ],
             ),
             trailing: Text(

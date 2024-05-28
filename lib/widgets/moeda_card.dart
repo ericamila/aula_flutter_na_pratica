@@ -1,13 +1,15 @@
-import 'package:aula_1/pages/moedas_detalhes_page.dart';
-import 'package:aula_1/repositories/favoritas_repository.dart';
+// ignore_for_file: depend_on_referenced_packages
+
+import '../models/moeda.dart';
+import '../configs/app_settings.dart';
+import '../pages/moedas_detalhes_page.dart';
+import '../repositories/favoritas_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/moeda.dart';
 
 class MoedaCard extends StatefulWidget {
   final Moeda moeda;
-
   const MoedaCard({super.key, required this.moeda});
 
   @override
@@ -15,12 +17,17 @@ class MoedaCard extends StatefulWidget {
 }
 
 class _MoedaCardState extends State<MoedaCard> {
-  NumberFormat real = NumberFormat.currency(locale: 'pt_BR', name: 'R\$');
+  late NumberFormat real;
 
   static Map<String, Color> precoColor = <String, Color>{
     'up': Colors.teal,
     'down': Colors.indigo,
   };
+
+  readNumberFormat() {
+    final loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
 
   abrirDetalhes() {
     Navigator.push(
@@ -33,6 +40,7 @@ class _MoedaCardState extends State<MoedaCard> {
 
   @override
   Widget build(BuildContext context) {
+    readNumberFormat();
     return Card(
       margin: const EdgeInsets.only(top: 12),
       elevation: 2,
@@ -73,17 +81,19 @@ class _MoedaCardState extends State<MoedaCard> {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
-                    color: precoColor['down']!.withOpacity(0.05),
-                    border: Border.all(
-                      color: precoColor['down']!.withOpacity(0.4),
-                    ),
-                    borderRadius: BorderRadius.circular(100)),
+                  color: precoColor['down']!.withOpacity(0.05),
+                  border: Border.all(
+                    color: precoColor['down']!.withOpacity(0.4),
+                  ),
+                  borderRadius: BorderRadius.circular(100),
+                ),
                 child: Text(
                   real.format(widget.moeda.preco),
                   style: TextStyle(
-                      fontSize: 16,
-                      color: precoColor['down'],
-                      letterSpacing: -1),
+                    fontSize: 16,
+                    color: precoColor['down'],
+                    letterSpacing: -1,
+                  ),
                 ),
               ),
               PopupMenuButton(
@@ -91,13 +101,13 @@ class _MoedaCardState extends State<MoedaCard> {
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     child: ListTile(
-                        title: const Text('Remover das Favoritas'),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Provider.of<FavoritasRepository>(context,
-                                  listen: false)
-                              .remove(widget.moeda);
-                        }),
+                      title: const Text('Remover das Favoritas'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Provider.of<FavoritasRepository>(context, listen: false)
+                            .remove(widget.moeda);
+                      },
+                    ),
                   ),
                 ],
               ),

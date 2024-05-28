@@ -1,7 +1,13 @@
+// ignore_for_file: depend_on_referenced_packages
+
+import 'package:app_criptu_moedas/repositories/conta_repository.dart';
+
+import '../configs/app_settings.dart';
+import '../models/moeda.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import '../models/moeda.dart';
+import 'package:provider/provider.dart';
 
 class MoedasDetalhesPage extends StatefulWidget {
   final Moeda moeda;
@@ -12,16 +18,19 @@ class MoedasDetalhesPage extends StatefulWidget {
 }
 
 class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
-  NumberFormat real = NumberFormat.currency(locale: 'pt_BR', name: "R\$");
+  late NumberFormat real;
   final _form = GlobalKey<FormState>();
   final _valor = TextEditingController();
   double quantidade = 0;
+  late ContaRepository conta;
 
-  comprar() {
+  comprar() async{
     if (_form.currentState!.validate()) {
-      //salvar
+      await conta.comprar(widget.moeda, double.parse(_valor.text));
+
 
       Navigator.pop(context);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Compra realizada com sucesso!')),
       );
@@ -30,14 +39,18 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
 
   @override
   Widget build(BuildContext context) {
+    readNumberFormat();
+    conta = Provider.of<ContaRepository>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.moeda.nome)),
+      appBar: AppBar(
+        title: Text(widget.moeda.nome),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
+              padding: const EdgeInsets.only(bottom: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,9 +59,7 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                     width: 50,
                     child: Image.asset(widget.moeda.icone),
                   ),
-                  Container(
-                    width: 10,
-                  ),
+                  Container(width: 10),
                   Text(
                     real.format(widget.moeda.preco),
                     style: TextStyle(
@@ -57,7 +68,7 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                       letterSpacing: -1,
                       color: Colors.grey[800],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -66,10 +77,8 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                     width: MediaQuery.of(context).size.width,
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 24),
-                      padding: const EdgeInsets.all(12),
+                      // padding: EdgeInsets.all(12),
                       alignment: Alignment.center,
-                      decoration:
-                          BoxDecoration(color: Colors.teal.withOpacity(0.10)),
                       child: Text(
                         '$quantidade ${widget.moeda.sigla}',
                         style: const TextStyle(
@@ -77,9 +86,14 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                           color: Colors.teal,
                         ),
                       ),
+                      // decoration: BoxDecoration(
+                      //   color: Colors.teal.withOpacity(0.05),
+                      // ),
                     ),
                   )
-                : Container(margin: const EdgeInsets.only(bottom: 24)),
+                : Container(
+                    margin: const EdgeInsets.only(bottom: 24),
+                  ),
             Form(
               key: _form,
               child: TextFormField(
@@ -101,6 +115,8 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                     return 'Informe o valor da compra';
                   } else if (double.parse(value) < 50) {
                     return 'Compra mínima é R\$ 50,00';
+                  } else if (double.parse(value) >= conta.saldo) {
+                    return 'Saldo insuficiente!';
                   }
                   return null;
                 },
@@ -128,14 +144,19 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                         'Comprar',
                         style: TextStyle(fontSize: 20),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  readNumberFormat() {
+    final loc = context.watch<AppSettings>().locale;
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
   }
 }

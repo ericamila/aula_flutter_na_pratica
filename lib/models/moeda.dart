@@ -10,5 +10,4 @@ class Moeda {
     required this.sigla,
     required this.preco,
   });
-
 }

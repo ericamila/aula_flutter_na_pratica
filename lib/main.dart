@@ -1,13 +1,24 @@
-import 'package:aula_1/repositories/favoritas_repository.dart';
+import 'package:app_criptu_moedas/repositories/conta_repository.dart';
+
+import 'configs/hive_config.dart';
+import 'repositories/favoritas_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'my_app.dart';
+import 'configs/app_settings.dart';
+import 'meu_aplicativo.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveConfig.start();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => FavoritasRepository(),
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ContaRepository()),
+        ChangeNotifierProvider(create: (context) => AppSettings()),
+        ChangeNotifierProvider(create: (context) => FavoritasRepository()),
+      ],
+      child: const MeuAplicativo(),
     ),
   );
 }

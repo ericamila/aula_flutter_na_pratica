@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class AuthException implements Exception {
   String message;
+
   AuthException(this.message);
 }
 
@@ -22,10 +23,12 @@ class AuthService extends ChangeNotifier {
       notifyListeners();
     });
   }
+
   _getUser() {
     usuario = _auth.currentUser;
     notifyListeners();
   }
+
   registrar(String email, String senha) async {
     try {
       await _auth.createUserWithEmailAndPassword(email: email, password: senha);
@@ -38,6 +41,7 @@ class AuthService extends ChangeNotifier {
       }
     }
   }
+
   login(String email, String senha) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: senha);
@@ -50,6 +54,7 @@ class AuthService extends ChangeNotifier {
       }
     }
   }
+
   logout() async {
     await _auth.signOut();
     _getUser();

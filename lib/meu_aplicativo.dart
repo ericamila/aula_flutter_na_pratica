@@ -1,4 +1,5 @@
-import 'pages/home_page.dart';
+import 'package:app_criptu_moedas/widgets/auth_check.dart';
+
 import 'package:flutter/material.dart';
 
 class MeuAplicativo extends StatelessWidget {
@@ -25,7 +26,7 @@ class MeuAplicativo extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5))),
         ),
       ),
-      home: const HomePage(),
+      home: const AuthCheck(),
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../services/auth_service.dart';
+
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
 
@@ -43,6 +45,27 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               ),
             ),
             const Divider(),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: OutlinedButton(
+                onPressed: () => context.read<AuthService>().logout(),
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8))),
+                child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Sair do App',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
           ],
         ),
       ),

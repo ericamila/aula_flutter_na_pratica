@@ -46,7 +46,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             ),
             const Divider(),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 24),
               child: OutlinedButton(
                 onPressed: () => context.read<AuthService>().logout(),
                 style: OutlinedButton.styleFrom(

@@ -2,6 +2,7 @@ import 'package:app_criptu_moedas/repositories/conta_repository.dart';
 import 'package:app_criptu_moedas/services/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'configs/hive_config.dart';
 import 'firebase_options.dart';
 import 'repositories/favoritas_repository.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'meu_aplicativo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await HiveConfig.start();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -21,7 +23,11 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AuthService()),
         ChangeNotifierProvider(create: (context) => ContaRepository()),
         ChangeNotifierProvider(create: (context) => AppSettings()),
-        ChangeNotifierProvider(create: (context) => FavoritasRepository()),
+        ChangeNotifierProvider(
+          create: (context) => FavoritasRepository(
+            auth: context.read<AuthService>(),
+          ),
+        ),
       ],
       child: const MeuAplicativo(),
     ),

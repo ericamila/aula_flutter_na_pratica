@@ -6,7 +6,7 @@ import '../pages/login_page.dart';
 import '../services/auth_service.dart';
 
 class AuthCheck extends StatefulWidget {
-  const AuthCheck({Key? key}) : super(key: key);
+  const AuthCheck({super.key});
 
   @override
   State<AuthCheck> createState() => _AuthCheckState();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:hive/hive.dart';
 
 class AppSettings extends ChangeNotifier {
   //late SharedPreferences _prefs;

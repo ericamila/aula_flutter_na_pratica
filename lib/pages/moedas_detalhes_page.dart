@@ -9,8 +9,11 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/grafico_historico.dart';
+
 class MoedasDetalhesPage extends StatefulWidget {
   final Moeda moeda;
+
   const MoedasDetalhesPage({super.key, required this.moeda});
 
   @override
@@ -23,11 +26,20 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
   final _valor = TextEditingController();
   double quantidade = 0;
   late ContaRepository conta;
+  Widget grafico = Container();
+  bool graficoloaded = false;
 
-  comprar() async{
+  getGrafico(){
+    if(!graficoloaded){
+      grafico = GraficoHistorico(moeda: widget.moeda);
+      graficoloaded = true;
+    }
+    return grafico;
+  }
+
+  comprar() async {
     if (_form.currentState!.validate()) {
       await conta.comprar(widget.moeda, double.parse(_valor.text));
-
 
       Navigator.pop(context);
 
@@ -57,7 +69,10 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                 children: [
                   SizedBox(
                     width: 50,
-                    child: Image.asset(widget.moeda.icone),
+                    child: Image.network(
+                      widget.moeda.icone,
+                      scale: 2.5,
+                    ),
                   ),
                   Container(width: 10),
                   Text(
@@ -72,6 +87,7 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                 ],
               ),
             ),
+            getGrafico(),
             (quantidade > 0)
                 ? SizedBox(
                     width: MediaQuery.of(context).size.width,

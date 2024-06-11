@@ -11,6 +11,7 @@ class ContaRepository extends ChangeNotifier {
   List<Historico> _historico = [];
   late Database db;
   double _saldo = 0;
+  late MoedaRepository moedas;
 
   get saldo => _saldo;
 
@@ -18,7 +19,7 @@ class ContaRepository extends ChangeNotifier {
 
   List<Historico> get historico => _historico;
 
-  ContaRepository() {
+  ContaRepository({required this.moedas}) {
     _initRepository();
   }
 
@@ -91,7 +92,7 @@ class ContaRepository extends ChangeNotifier {
     _carteira = [];
     List posicoes = await db.query('carteira');
     for (var posicao in posicoes) {
-      Moeda moeda = MoedaRepository.tabela.firstWhere(
+      Moeda moeda = moedas.tabela.firstWhere(
         (m) => m.sigla == posicao['sigla'],
       );
       _carteira.add(Posicao(
@@ -106,7 +107,7 @@ class ContaRepository extends ChangeNotifier {
     _historico = [];
     List operacoes = await db.query('historico');
     for (var operacao in operacoes) {
-      Moeda moeda = MoedaRepository.tabela.firstWhere(
+      Moeda moeda = moedas.tabela.firstWhere(
         (m) => m.sigla == operacao['sigla'],
       );
       _historico.add(Historico(

@@ -157,15 +157,31 @@ class _GraficoHistoricoState extends State<GraficoHistorico> {
         aspectRatio: 2,
         child: Stack(
           children: [
-            ValueListenableBuilder(
-              valueListenable: loaded,
-              builder: (context, bool isLoaded, _) {
-                return (isLoaded)
-                    ? LineChart(getChartData())
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      );
-              },
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  chartButton(Periodo.hora, '1H'),
+                  chartButton(Periodo.dia, '24H'),
+                  chartButton(Periodo.semana, '7D'),
+                  chartButton(Periodo.mes, 'Mês'),
+                  chartButton(Periodo.ano, 'Ano'),
+                  chartButton(Periodo.total, 'Tudo'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 80),
+              child: ValueListenableBuilder(
+                valueListenable: loaded,
+                builder: (context, bool isLoaded, _) {
+                  return (isLoaded)
+                      ? LineChart(getChartData())
+                      : const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                },
+              ),
             )
           ],
         ),

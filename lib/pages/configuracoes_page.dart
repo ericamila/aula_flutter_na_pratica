@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../services/auth_service.dart';
+import 'documentos_page.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -45,25 +46,42 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               ),
             ),
             const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: OutlinedButton(
-                onPressed: () => context.read<AuthService>().logout(),
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          'Sair do App',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ]),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Scanear a CNH ou RG'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DocumentosPage(),
+                  fullscreenDialog: true
+                ),
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: OutlinedButton(
+                    onPressed: () => context.read<AuthService>().logout(),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8))),
+                    child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Sair do App',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ]),
+                  ),
+                ),
               ),
             ),
           ],

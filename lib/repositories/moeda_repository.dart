@@ -9,7 +9,8 @@ import '../models/moeda.dart';
 
 class MoedaRepository extends ChangeNotifier {
   static List<Moeda> _tabela = [];
-late Timer intervalo;
+  late Timer intervalo;
+
   List<Moeda> get tabela => _tabela;
 
   MoedaRepository() {
@@ -19,9 +20,10 @@ late Timer intervalo;
     _refreshPrecos();
   }
 
-   _refreshPrecos() async {
-     intervalo = Timer.periodic(const Duration(minutes: 5), (_) => checkPrecos());
-   }
+  _refreshPrecos() async {
+    intervalo =
+        Timer.periodic(const Duration(minutes: 5), (_) => checkPrecos());
+  }
 
   _setupMoedasTable() async {
     const String table = '''
@@ -44,7 +46,7 @@ late Timer intervalo;
     await db.execute(table);
   }
 
-  _moedasTableIsEmpty() async{
+  _moedasTableIsEmpty() async {
     Database db = await DB.instance.database;
     List resultados = await db.query('moedas');
     return resultados.isEmpty;
@@ -90,24 +92,25 @@ late Timer intervalo;
     Database db = await DB.instance.database;
     List resultados = await db.query('moedas');
 
-
     _tabela = resultados.map((row) {
-      if(row['baseId'] == '2b92315d-eab7-5bef-84fa-089a131333f5'){
-        return Moeda(
-          baseId: row['baseId'],
-          icone: row['icone'],
-          sigla: row['sigla'],
-          nome: row['nome'],
-          preco: double.parse(row['preco']),
-          timestamp: DateTime.fromMillisecondsSinceEpoch(row['timestamp']),
-          mudancaHora: 0,
-          mudancaDia: 0,
-          mudancaSemana: 0,
-          mudancaMes: 0,
-          mudancaAno: 0,
-          mudancaPeriodoTotal: double.parse(row['mudancaPeriodoTotal']),
-        );
+      double mudancaHora = 0,
+          mudancaDia = 0,
+          mudancaSemana = 0,
+          mudancaMes = 0,
+          mudancaAno = 0,
+          mudancaPeriodoTotal = 0;
+
+      try {
+        mudancaHora = double.parse(row['mudancaHora']);
+        mudancaDia = double.parse(row['mudancaDia']);
+        mudancaSemana = double.parse(row['mudancaSemana']);
+        mudancaMes = double.parse(row['mudancaMes']);
+        mudancaAno = double.parse(row['mudancaAno']);
+        mudancaPeriodoTotal = double.parse(row['mudancaPeriodoTotal']);
+      } catch (e) {
+        debugPrint('debug $e');
       }
+
       return Moeda(
         baseId: row['baseId'],
         icone: row['icone'].toString(),
@@ -115,12 +118,12 @@ late Timer intervalo;
         nome: row['nome'],
         preco: double.parse(row['preco']),
         timestamp: DateTime.fromMillisecondsSinceEpoch(row['timestamp']),
-        mudancaHora: double.parse((row['mudancaHora']) ?? 0),
-        mudancaDia: double.parse(row['mudancaDia'] ?? 0),
-        mudancaSemana: double.parse(row['mudancaSemana'] ?? 0),
-        mudancaMes: double.parse(row['mudancaMes']),
-        mudancaAno: double.parse(row['mudancaAno'] ?? 0),
-        mudancaPeriodoTotal: double.parse(row['mudancaPeriodoTotal']),
+        mudancaHora: mudancaHora,
+        mudancaDia: mudancaDia,
+        mudancaSemana: mudancaSemana,
+        mudancaMes: mudancaMes,
+        mudancaAno: mudancaAno,
+        mudancaPeriodoTotal: mudancaPeriodoTotal,
       );
     }).toList();
 
@@ -189,7 +192,4 @@ late Timer intervalo;
       await _readMoedasTable();
     }
   }
-
-
-
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -59,6 +61,83 @@ class _DocumentosPageState extends State<DocumentosPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Documento Oficial'),
+        backgroundColor: Colors.grey[900],
+        centerTitle: true,
+      ),
+      body: Container(
+        color: Colors.grey[900],
+        child: Center(
+          child: _arquivoWidget(),
+        ),
+      ),
+      floatingActionButton: (imagem != null)
+          ? FloatingActionButton.extended(
+              onPressed: () => Navigator.pop(context),
+              label: const Text('Finalizar'),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  _arquivoWidget() {
+    return Container(
+      width: size!.width - 50,
+      height: size!.height - (size!.height / 3),
+      child: imagem == null
+          ? _cameraPreviewWidget()
+          : Image.file(
+              File(imagem!.path),
+              fit: BoxFit.contain,
+            ),
+    );
+  }
+
+  _cameraPreviewWidget() {
+    final CameraController cameraController = controller!;
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return const Text('Widget para Câmera que não está disponível');
+    } else {
+      return Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          CameraPreview(controller!),
+          _botaoCapturaWidget(),
+        ],
+      );
+    }
+  }
+
+  _botaoCapturaWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: CircleAvatar(
+        radius: 32,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        child: IconButton(
+            onPressed: tirarFoto,
+            icon: const Icon(
+              Icons.camera_alt,
+              color: Colors.white,
+              size: 30,
+            )),
+      ),
+    );
+  }
+
+  tirarFoto() async {
+    final CameraController? cameraController = controller;
+    if (cameraController != null && cameraController.value.isInitialized) {
+      try {
+        XFile file = await cameraController.takePicture();
+        if (mounted) setState(() => imagem = file);
+      } on CameraException catch (e) {
+        print(e.description);
+      }
+    }
   }
 }

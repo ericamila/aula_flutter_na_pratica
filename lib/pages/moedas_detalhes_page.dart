@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:app_criptu_moedas/repositories/conta_repository.dart';
+import 'package:social_share/social_share.dart';
 
 import '../configs/app_settings.dart';
 import '../models/moeda.dart';
@@ -49,6 +50,14 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
     }
   }
 
+  compartilharPreco() {
+    final moeda = widget.moeda;
+    SocialShare.shareOptions(
+      "Confira o preço do ${moeda.nome} agora: ${real.format(moeda.preco)}",
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     readNumberFormat();
@@ -56,6 +65,12 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.moeda.nome),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: compartilharPreco,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),

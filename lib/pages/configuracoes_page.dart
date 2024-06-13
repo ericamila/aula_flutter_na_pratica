@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:app_criptu_moedas/configs/app_settings.dart';
 import 'package:app_criptu_moedas/repositories/conta_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -16,6 +19,8 @@ class ConfiguracoesPage extends StatefulWidget {
 }
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
+  XFile? comprovante;
+
   @override
   Widget build(BuildContext context) {
     final conta = context.watch<ContaRepository>();
@@ -52,10 +57,18 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DocumentosPage(),
-                  fullscreenDialog: true
-                ),
+                    builder: (context) => const DocumentosPage(),
+                    fullscreenDialog: true),
               ),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.attach_file),
+              title: const Text('Enviar Comprovante de Depósito'),
+              onTap: () => selecionarComprovante(),
+              trailing: comprovante != null
+                  ? Image.file(File(comprovante!.path))
+                  : null,
             ),
             const Divider(),
             Expanded(
@@ -88,6 +101,17 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         ),
       ),
     );
+  }
+
+  selecionarComprovante() async{
+    final ImagePicker picker = ImagePicker();
+
+    try{
+      XFile? file = await picker.pickImage(source: ImageSource.gallery);
+      if (file != null) setState(() => comprovante = file);
+    } catch(e){
+      print(e);
+    }
   }
 
   updateSaldo() async {
